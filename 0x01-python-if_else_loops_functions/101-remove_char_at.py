@@ -1,4 +1,4 @@
-#/usr/bin/python3
+#!/usr/bin/python3
 # 101-remove_char_at.py
 
 def remove_char_at(str, n):
