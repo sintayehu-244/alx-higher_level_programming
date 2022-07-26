@@ -1,81 +1,75 @@
 #!/usr/bin/python3
-"""Module is to solve the N-Queens challenge problem"""
-from sys import argv
+"""queens puzzl
+
+    """
+
+import sys
 
 
-def checkspot(board, r, c):
-    n = len(board) - 1
-    if board[r][c]:
-        return 0
-    for row in range(r):
-        if board[row][c]:
-            return 0
-    i = r
-    j = c
-    while i > 0 and j > 0:
-        i -= 1
-        j -= 1
-        if board[i][j]:
-            return 0
-    i = r
-    j = c
-    while i > 0 and j < n:
-        i -= 1
-        j += 1
-        if board[i][j]:
-            return 0
-    return 1
+def checkQueen(queens, queen):
+    """Check array queen
+    """
+    for x, y in queens:
+        if y == queen[1]:
+            return False
+        if abs((y - queen[1]) / (x - queen[0])) == 1:
+            return False
+    return True
 
 
-def initboard(n=4):
-    b = []
-    for r in range(n):
-        b.append([0 for c in range(n)])
-    return b
+def placeQueen(n, queens, solutions):
+    """localizate place of queen
+    """
+    if len(queens) == n:
+        for q in queens:
+            solutions.append(q)
+
+        return
+    x = len(queens)
+    for y in range(n):
+        queen = [x, y]
+        if checkQueen(queens, queen):
+            queens.append(queen)
+            placeQueen(n, queens, solutions)
+            queens.pop()
 
 
-def findsoln(board, row):
-    for col in range(len(board)):
-        if checkspot(board, row, col):
-            board[row][col] = 1
-            if row == len(board) - 1:
-                print(convtosoln(board))
-                board[row][col] = 0
-                continue
-            if findsoln(board, row + 1):
-                return board
-            else:
-                board[row][col] = 0
-    return None
-
-
-def convtosoln(board):
-    soln = []
-    n = len(board)
-    for r in range(n):
-        for c in range(n):
-            if board[r][c]:
-                soln.append([r, c])
-    return soln
-
-
-def nqueens(n=4):
-    for col in range(n):
-        board = initboard(n)
-        board[0][col] = 1
-        findsoln(board, 1)
-
-
-if __name__ == "__main__":
-    if len(argv) != 2:
-        print("Usage: nqueens N")
-        exit(1)
+def validate_args():
+    """Validate value input
+    """
+    if len(sys.argv) != 2:
+        print('Usage: nqueens N')
+        sys.exit(1)
     try:
-        n = int(argv[1])
-    except:
-        print("N must be a number")
-        exit(1)
+        n = int(sys.argv[1])
+    except ValueError:
+        print('N must be a number')
+        sys.exit(1)
     if n < 4:
-        print("N must be at least 4")
-        exit(1)
-    nqueens(n)
+        print('N must be at least 4')
+        sys.exit(1)
+    return n
+
+
+def main():
+    """define program main
+    """
+    n = validate_args()
+    queens = []
+    solutions = []
+    placeQueen(n, queens, solutions)
+
+    arrayaux = []
+
+    cont = 0
+    for m in solutions:
+        cont += 1
+        arrayaux.append(m)
+        if cont == n:
+            cont = 0
+            print(arrayaux)
+            arrayaux = []
+
+
+if __name__ == '__main__':
+    main()
