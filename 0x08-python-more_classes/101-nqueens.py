@@ -1,75 +1,60 @@
 #!/usr/bin/python3
-"""queens puzzl
-
-    """
-
-import sys
+"""
+Program that solves the N queens problem
+"""
 
 
-def checkQueen(queens, queen):
-    """Check array queen
-    """
-    for x, y in queens:
-        if y == queen[1]:
-            return False
-        if abs((y - queen[1]) / (x - queen[0])) == 1:
-            return False
-    return True
+from sys import argv
 
-
-def placeQueen(n, queens, solutions):
-    """localizate place of queen
-    """
-    if len(queens) == n:
-        for q in queens:
-            solutions.append(q)
-
-        return
-    x = len(queens)
-    for y in range(n):
-        queen = [x, y]
-        if checkQueen(queens, queen):
-            queens.append(queen)
-            placeQueen(n, queens, solutions)
-            queens.pop()
-
-
-def validate_args():
-    """Validate value input
-    """
-    if len(sys.argv) != 2:
-        print('Usage: nqueens N')
-        sys.exit(1)
-    try:
-        n = int(sys.argv[1])
-    except ValueError:
-        print('N must be a number')
-        sys.exit(1)
+if __name__ == "__main__":
+    if len(argv) != 2:
+        print("Usage: nqueens N")
+        exit(1)
+    if argv[1].isdigit() is False:
+        print("N must be a number")
+        exit(1)
+    n = int(argv[1])
     if n < 4:
-        print('N must be at least 4')
-        sys.exit(1)
-    return n
+        print("N must be at least 4")
+        exit(1)
 
+    sol = []
 
-def main():
-    """define program main
-    """
-    n = validate_args()
-    queens = []
-    solutions = []
-    placeQueen(n, queens, solutions)
+    for row in range(n):
+        sol.append([row, -1])
 
-    arrayaux = []
+    def reset(i):
+        """reset the way of solution if failure"""
+        for row in range(i, n):
+            sol[row][1] = -1
 
-    cont = 0
-    for m in solutions:
-        cont += 1
-        arrayaux.append(m)
-        if cont == n:
-            cont = 0
-            print(arrayaux)
-            arrayaux = []
+    def check_column(j):
+        """check if the column is already taken"""
+        for i in range(n):
+            if j == sol[i][1]:
+                return True
+        return False
 
+    def validation(i, j):
+        """check column and diagonal"""
+        if (check_column(j)):
+            return False
+        row = 0
+        while(row < i):
+            if abs(sol[row][1] - j) == abs(row - i):
+                return False
+            row += 1
+        return True
 
-if __name__ == '__main__':
-    main()
+    def recursive(i):
+        """backtracking to find solutions"""
+        for j in range(n):
+            reset(i)
+            if validation(i, j):
+                sol[i][1] = j
+                if (i == n - 1):
+                    print(sol)
+                else:
+                    recursive(i + 1)
+
+    recursive(0)
