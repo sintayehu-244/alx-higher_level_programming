@@ -1,22 +1,15 @@
 #!/usr/bin/python3
-"""Check status"""
+"""
+Takes in a string and sends a search request to the Star Wars API.
+"""
 import requests
-from requests.auth import HTTPBasicAuth
 import sys
 
+if __name__ == '__main__':
+    user = sys.argv[1]
+    password = sys.argv[2]
+    url = 'https://api.github.com/user'
 
-def searchapi():
-    """status"""
-    user = str(sys.argv[1])
-    pw = str(sys.argv[2])
-    result = requests.get("https://github.com/sintayehu-244/",
-                          auth=(HTTPBasicAuth(user, pw)))
-
-    try:
-        data = result.json()
-        print(data["id"])
-    except:
-        print("None")
-
-if __name__ == "__main__":
-    searchapi()
+    r = requests.get(url, auth=(user, password))
+    json_repr = r.json()
+    print(json_repr.get('id', 'None'))
