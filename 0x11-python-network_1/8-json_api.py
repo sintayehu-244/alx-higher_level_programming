@@ -8,6 +8,7 @@ from sys import argv
 
 if __name__ == '__main__':
     q = argv[1] if len(argv) == 2 else ""
+    q=""
     url = 'http://0.0.0.0:5000/search_user'
     r = requests.post(url, data={'q': q})
     try:
