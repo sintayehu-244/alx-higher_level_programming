@@ -1,23 +1,46 @@
 #!/usr/bin/node
-// A script that prints the number of movies where the character “Wedge Antilles” is present
 
 const request = require('request');
-const url = 'http://swapi.co/api/films/' + process.argv[2];
 
-let charNames = {};
-request({ url: url, json: true }, (err, res) => {
-  if (err) {
-    console.error(err);
-  } else {
-    const filmChars = res.body.characters;
-    for (let i = 0; i < filmChars.length; i++) {
-      request(filmChars[i], { json: true }, (err, res) => {
-        if (err) {
+function getDataFrom (url) {
+  return new Promise(function (resolve, reject) {
+    request(url, function (err, _res, body) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(body);
+      }
+    });
+  });
+}
+
+function errHandler (err) {
+  console.log(err);
+}
+
+function printMovieCharacters (movieId) {
+  const movieUri = `https://swapi-api.hbtn.io/api/films/${movieId}`;
+
+  getDataFrom(movieUri)
+    .then(JSON.parse, errHandler)
+    .then(function (res) {
+      const characters = res.characters;
+      const promises = [];
+
+      for (let i = 0; i < characters.length; ++i) {
+        promises.push(getDataFrom(characters[i]));
+      }
+
+      Promise.all(promises)
+        .then((results) => {
+          for (let i = 0; i < results.length; ++i) {
+            console.log(JSON.parse(results[i]).name);
+          }
+        })
+        .catch((err) => {
           console.log(err);
-        }
-        charNames = res.body;
-        console.log(charNames.name);
-      });
-    }
-  }
-});
+        });
+    });
+}
+
+printMovieCharacters(process.argv[2]);
